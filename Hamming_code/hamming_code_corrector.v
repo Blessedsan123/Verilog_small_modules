@@ -1,3 +1,4 @@
+// Code your design here
 module hamming_encoder(
   input [4:1] data_in,
   input parity_type,
@@ -20,8 +21,10 @@ endmodule
 module hamming_decoder(
   input [7:1] code_in,
   input parity_type,
+  output reg [7:1]corrected_code,
   output [4:1] data_out,
-  output reg error_d
+  output reg error_d,
+  output [2:0] error_pos
 );
   
   wire s1,s2,s3;
@@ -30,10 +33,9 @@ module hamming_decoder(
   assign s2 = code_in[2]^code_in[3]^code_in[6]^code_in[7]^parity_type;
   assign s3 = code_in[4]^code_in[5]^code_in[6]^code_in[7]^parity_type;
   
-  wire [2:0]error_pos;
+  
   assign error_pos = {s3,s2,s1};
   
-  reg [7:1]corrected_code;
   
   always @(*)
     begin
@@ -57,6 +59,8 @@ module hamming_top(
   output [7:1] code_out,
   output [4:1] data_out,
   output error_d,
+  output [7:1] corrected_code,
+  output [2:0] error_pos,
   output [3:1] parity_out
 );
   
@@ -68,8 +72,10 @@ module hamming_top(
   
   hamming_decoder ham_dec(.code_in(code_out),
                           .parity_type(parity_type),
+                          .corrected_code(corrected_code),
                           .data_out(data_out),
-                          .error_d(error_d)
+                          .error_d(error_d),
+                          .error_pos(error_pos)
                          );
   
 endmodule
