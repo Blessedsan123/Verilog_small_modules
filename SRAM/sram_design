@@ -1,0 +1,38 @@
+module sram #(data_width = 8,
+              data_addr = 4,
+             depth = 16)
+  (input clk,
+   input cs,
+   input [data_width-1:0] data_in,
+   input [data_addr-1:0] addr,
+   input write,
+   input read,
+   output reg [data_width-1:0] data_out,
+   output reg write_succ,
+   output reg read_succ
+  );
+  
+  reg [data_width-1:0] memory [depth-1 :0];
+  
+  always @ (posedge clk)
+    begin
+      if(cs)
+        begin
+          if(write) 
+            begin
+              memory[addr] <= data_in;
+              write_succ <= 1;
+              read_succ <= 0;
+            end
+          else if(read)
+            begin
+              data_out<= memory[addr];
+              read_succ <= 1;
+              write_succ <= 0;
+            end
+            
+        end
+    end
+  
+  
+endmodule
