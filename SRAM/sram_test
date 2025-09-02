@@ -1,0 +1,48 @@
+module test#(data_width = 8,
+              data_addr = 4,
+             depth = 16);
+  reg clk;
+  reg cs;
+  reg [data_width-1:0] data_in;
+  reg [data_addr-1:0] addr;
+  reg write;
+  reg read;
+  wire [data_width-1:0] data_out;
+  wire write_succ;
+  wire read_succ;
+  
+  
+  sram dut(
+    .clk(clk),
+    .cs(cs),
+    .data_in(data_in),
+    .addr(addr),
+    .write(write),
+    .read(read),
+    .data_out(data_out),
+    .write_succ(write_succ),
+    .read_succ(read_succ)
+  );
+  
+  always #5 clk = ~clk;
+  
+  initial
+    begin
+      $dumpfile("wave.vcd");
+      $dumpvars(0,test);
+      $monitor("data_in : %d || address : %d || write : %b || read : %b || data_out : %d || write_sucess : %b || read_success : %b",data_in,addr,write,read,data_out,write_succ,read_succ);
+      clk = 0 ;
+      cs = 0;
+      #10;
+      cs = 1;
+      read = 0;
+      write  = 1;
+      data_in = 8'b01010101;
+      addr = 4'b0011;
+      #10;
+      write = 0 ;
+      #2 read = 1;
+      addr = 4'b0011;
+      #10 $finish;
+    end
+endmodule
